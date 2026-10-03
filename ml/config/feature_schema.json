@@ -1,0 +1,271 @@
+{
+    "feature_schema_version": "1.0.0",
+    "description": "CICFlowMeter-compatible feature schema for SENTINEL-AI. This is the single source of truth used by both the training pipeline and the live flow aggregator.",
+    "total_features": 42,
+    "features": [
+        {
+            "name": "flow_duration",
+            "dtype": "float64",
+            "description": "Duration of the flow in microseconds",
+            "category": "temporal"
+        },
+        {
+            "name": "total_fwd_packets",
+            "dtype": "int64",
+            "description": "Total packets in the forward direction",
+            "category": "packet_count"
+        },
+        {
+            "name": "total_bwd_packets",
+            "dtype": "int64",
+            "description": "Total packets in the backward direction",
+            "category": "packet_count"
+        },
+        {
+            "name": "total_length_fwd_packets",
+            "dtype": "float64",
+            "description": "Total size of packets in the forward direction",
+            "category": "packet_length"
+        },
+        {
+            "name": "total_length_bwd_packets",
+            "dtype": "float64",
+            "description": "Total size of packets in the backward direction",
+            "category": "packet_length"
+        },
+        {
+            "name": "fwd_packet_length_max",
+            "dtype": "float64",
+            "description": "Maximum size of packet in forward direction",
+            "category": "packet_length"
+        },
+        {
+            "name": "fwd_packet_length_min",
+            "dtype": "float64",
+            "description": "Minimum size of packet in forward direction",
+            "category": "packet_length"
+        },
+        {
+            "name": "fwd_packet_length_mean",
+            "dtype": "float64",
+            "description": "Mean size of packet in forward direction",
+            "category": "packet_length"
+        },
+        {
+            "name": "fwd_packet_length_std",
+            "dtype": "float64",
+            "description": "Standard deviation of packet size in forward direction",
+            "category": "packet_length"
+        },
+        {
+            "name": "bwd_packet_length_max",
+            "dtype": "float64",
+            "description": "Maximum size of packet in backward direction",
+            "category": "packet_length"
+        },
+        {
+            "name": "bwd_packet_length_min",
+            "dtype": "float64",
+            "description": "Minimum size of packet in backward direction",
+            "category": "packet_length"
+        },
+        {
+            "name": "bwd_packet_length_mean",
+            "dtype": "float64",
+            "description": "Mean size of packet in backward direction",
+            "category": "packet_length"
+        },
+        {
+            "name": "bwd_packet_length_std",
+            "dtype": "float64",
+            "description": "Standard deviation of packet size in backward direction",
+            "category": "packet_length"
+        },
+        {
+            "name": "flow_bytes_per_s",
+            "dtype": "float64",
+            "description": "Flow bytes per second",
+            "category": "flow_rate"
+        },
+        {
+            "name": "flow_packets_per_s",
+            "dtype": "float64",
+            "description": "Flow packets per second",
+            "category": "flow_rate"
+        },
+        {
+            "name": "flow_iat_mean",
+            "dtype": "float64",
+            "description": "Mean inter-arrival time of flow packets",
+            "category": "inter_arrival"
+        },
+        {
+            "name": "flow_iat_std",
+            "dtype": "float64",
+            "description": "Standard deviation of inter-arrival time",
+            "category": "inter_arrival"
+        },
+        {
+            "name": "flow_iat_max",
+            "dtype": "float64",
+            "description": "Maximum inter-arrival time",
+            "category": "inter_arrival"
+        },
+        {
+            "name": "flow_iat_min",
+            "dtype": "float64",
+            "description": "Minimum inter-arrival time",
+            "category": "inter_arrival"
+        },
+        {
+            "name": "fwd_iat_total",
+            "dtype": "float64",
+            "description": "Total inter-arrival time in forward direction",
+            "category": "inter_arrival"
+        },
+        {
+            "name": "fwd_iat_mean",
+            "dtype": "float64",
+            "description": "Mean inter-arrival time in forward direction",
+            "category": "inter_arrival"
+        },
+        {
+            "name": "fwd_iat_std",
+            "dtype": "float64",
+            "description": "Standard deviation of IAT in forward direction",
+            "category": "inter_arrival"
+        },
+        {
+            "name": "fwd_iat_max",
+            "dtype": "float64",
+            "description": "Maximum IAT in forward direction",
+            "category": "inter_arrival"
+        },
+        {
+            "name": "fwd_iat_min",
+            "dtype": "float64",
+            "description": "Minimum IAT in forward direction",
+            "category": "inter_arrival"
+        },
+        {
+            "name": "bwd_iat_total",
+            "dtype": "float64",
+            "description": "Total inter-arrival time in backward direction",
+            "category": "inter_arrival"
+        },
+        {
+            "name": "bwd_iat_mean",
+            "dtype": "float64",
+            "description": "Mean inter-arrival time in backward direction",
+            "category": "inter_arrival"
+        },
+        {
+            "name": "bwd_iat_std",
+            "dtype": "float64",
+            "description": "Standard deviation of IAT in backward direction",
+            "category": "inter_arrival"
+        },
+        {
+            "name": "bwd_iat_max",
+            "dtype": "float64",
+            "description": "Maximum IAT in backward direction",
+            "category": "inter_arrival"
+        },
+        {
+            "name": "bwd_iat_min",
+            "dtype": "float64",
+            "description": "Minimum IAT in backward direction",
+            "category": "inter_arrival"
+        },
+        {
+            "name": "fwd_psh_flags",
+            "dtype": "int64",
+            "description": "Number of times PSH flag was set in forward direction",
+            "category": "flags"
+        },
+        {
+            "name": "fwd_urg_flags",
+            "dtype": "int64",
+            "description": "Number of times URG flag was set in forward direction",
+            "category": "flags"
+        },
+        {
+            "name": "fwd_header_length",
+            "dtype": "float64",
+            "description": "Total bytes used for headers in the forward direction",
+            "category": "header"
+        },
+        {
+            "name": "bwd_header_length",
+            "dtype": "float64",
+            "description": "Total bytes used for headers in the backward direction",
+            "category": "header"
+        },
+        {
+            "name": "fwd_packets_per_s",
+            "dtype": "float64",
+            "description": "Number of forward packets per second",
+            "category": "flow_rate"
+        },
+        {
+            "name": "bwd_packets_per_s",
+            "dtype": "float64",
+            "description": "Number of backward packets per second",
+            "category": "flow_rate"
+        },
+        {
+            "name": "packet_length_min",
+            "dtype": "float64",
+            "description": "Minimum length of a packet",
+            "category": "packet_length"
+        },
+        {
+            "name": "packet_length_max",
+            "dtype": "float64",
+            "description": "Maximum length of a packet",
+            "category": "packet_length"
+        },
+        {
+            "name": "packet_length_mean",
+            "dtype": "float64",
+            "description": "Mean length of a packet",
+            "category": "packet_length"
+        },
+        {
+            "name": "packet_length_std",
+            "dtype": "float64",
+            "description": "Standard deviation of packet length",
+            "category": "packet_length"
+        },
+        {
+            "name": "packet_length_variance",
+            "dtype": "float64",
+            "description": "Variance of packet length",
+            "category": "packet_length"
+        },
+        {
+            "name": "syn_flag_count",
+            "dtype": "int64",
+            "description": "Number of packets with SYN flag",
+            "category": "flags"
+        },
+        {
+            "name": "ack_flag_count",
+            "dtype": "int64",
+            "description": "Number of packets with ACK flag",
+            "category": "flags"
+        }
+    ],
+    "label_schema": {
+        "num_classes": 6,
+        "classes": {
+            "0": "Benign",
+            "1": "DoS/DDoS",
+            "2": "PortScan",
+            "3": "BruteForce",
+            "4": "WebAttack",
+            "5": "Infiltration"
+        },
+        "mapping_notes": "Raw dataset labels are mapped to this 6-class schema during preprocessing. See ml/data/preprocessing.py for the exact mapping."
+    }
+}

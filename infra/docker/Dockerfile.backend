@@ -1,0 +1,16 @@
+# ============================================
+# SENTINEL-AI — Node.js Backend Dockerfile
+# ============================================
+
+FROM node:18-slim
+
+WORKDIR /app
+
+COPY backend/package*.json ./
+RUN npm ci --production
+
+COPY backend/ ./
+
+EXPOSE 3001
+
+CMD ["node", "src/server.js"]

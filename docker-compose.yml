@@ -1,0 +1,73 @@
+# ============================================
+# SENTINEL-AI — Docker Compose
+# ============================================
+# Orchestrates all services for the full SENTINEL-AI stack.
+# Usage: docker compose up
+#
+# NOTE: This is a scaffold — services will be fully wired in Phase 8.
+
+version: '3.8'
+
+services:
+  # -------------------- Inference Engine (Python) --------------------
+  inference:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.inference
+    container_name: sentinel-inference
+    network_mode: host      # Needed for packet capture on the host interface
+    cap_add:
+      - NET_ADMIN           # iptables access
+      - NET_RAW             # Raw packet capture (Scapy)
+    env_file: .env
+    volumes:
+      - ./ml/models/artifacts:/app/ml/models/artifacts:ro
+      - ./ml/config:/app/ml/config:ro
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  # -------------------- Backend (Node.js) --------------------
+  backend:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.backend
+    container_name: sentinel-backend
+    ports:
+      - "${BACKEND_PORT:-3001}:3001"
+    env_file: .env
+    depends_on:
+      - timeseries-db
+    restart: unless-stopped
+
+  # -------------------- Frontend (React — served via Nginx in prod) --------------------
+  # frontend:
+  #   build:
+  #     context: .
+  #     dockerfile: infra/docker/Dockerfile.frontend
+  #   container_name: sentinel-frontend
+  #   ports:
+  #     - "3000:80"
+  #   depends_on:
+  #     - backend
+  #   restart: unless-stopped
+
+  # -------------------- Time-Series Database --------------------
+  timeseries-db:
+    image: influxdb:2.7
+    container_name: sentinel-influxdb
+    ports:
+      - "8086:8086"
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=sentinel-admin-password
+      - DOCKER_INFLUXDB_INIT_ORG=${INFLUXDB_ORG:-sentinel-ai}
+      - DOCKER_INFLUXDB_INIT_BUCKET=${INFLUXDB_BUCKET:-network_flows}
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUXDB_TOKEN:-sentinel-dev-token}
+    volumes:
+      - influxdb-data:/var/lib/influxdb2
+    restart: unless-stopped
+
+volumes:
+  influxdb-data:

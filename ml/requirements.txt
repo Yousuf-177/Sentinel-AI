@@ -1,0 +1,58 @@
+# ============================================
+# SENTINEL-AI — Python ML Pipeline Dependencies
+# ============================================
+# Install: pip install -r requirements.txt
+# Python version: 3.11+
+
+# -------------------- Core ML --------------------
+tensorflow>=2.15.0
+keras>=3.0.0
+scikit-learn>=1.4.0
+numpy>=1.26.0
+pandas>=2.2.0
+
+# -------------------- Data Processing --------------------
+pyarrow>=15.0.0          # Parquet read/write
+imbalanced-learn>=0.12.0 # SMOTE for class imbalance
+
+# -------------------- Explainability (XAI) --------------------
+shap>=0.44.0
+
+# -------------------- Packet Capture & Network --------------------
+scapy>=2.5.0
+
+# -------------------- Visualization --------------------
+matplotlib>=3.8.0
+seaborn>=0.13.0
+
+# -------------------- Experiment Tracking --------------------
+tensorboard>=2.15.0
+
+# -------------------- Communication Bridge --------------------
+python-socketio[client]>=5.11.0
+flask-socketio>=5.3.0
+flask>=3.0.0
+flask-cors>=4.0.0
+
+# -------------------- Reporting --------------------
+reportlab>=4.1.0
+
+# -------------------- Database --------------------
+influxdb-client>=1.40.0
+
+# -------------------- Utilities --------------------
+python-dotenv>=1.0.0
+tqdm>=4.66.0
+joblib>=1.3.0
+pyyaml>=6.0.0
+
+# -------------------- Testing --------------------
+pytest>=8.0.0
+pytest-cov>=4.1.0
+
+# -------------------- Code Quality --------------------
+ruff>=0.2.0
+
+# -------------------- Jupyter --------------------
+jupyter>=1.0.0
+ipykernel>=6.29.0

@@ -173,8 +173,3 @@ This project is developed as an academic/university project. See [LICENSE](LICEN
 
 ---
 
-## 📞 Contact
-
-- **Developer:** [Your Name]
-- **Guide:** [Guide Name]
-- **Institution:** [University / Department]

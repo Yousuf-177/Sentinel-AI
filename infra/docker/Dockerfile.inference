@@ -1,0 +1,28 @@
+# ============================================
+# SENTINEL-AI — Python Inference Engine Dockerfile
+# ============================================
+# Builds the Python ML pipeline service (sniffer + flow aggregator + model + SHAP + decision router)
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# System dependencies for Scapy (packet capture)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpcap-dev \
+    iptables \
+    tcpdump \
+    && rm -rf /var/lib/apt/lists/*
+
+# Python dependencies
+COPY ml/requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy ML pipeline code
+COPY ml/ ./ml/
+COPY .env.example ./.env
+
+# Expose no ports — communicates via Socket.io to the Node backend
+# Needs NET_ADMIN + NET_RAW capabilities for packet capture and iptables
+
+CMD ["python", "-m", "ml.inference.pipeline"]

@@ -1,0 +1,118 @@
+# ============================================================
+# SENTINEL-AI .gitignore
+# Covers: Python, Node.js, ML artifacts, Datasets, Docker, IDEs
+# ============================================================
+
+# -------------------- Python --------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+*.whl
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Virtual environments
+venv/
+env/
+.env/
+.venv/
+ENV/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# -------------------- Node.js --------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp.*
+.yarn/
+
+# -------------------- ML Artifacts --------------------
+# Model files (large binaries — track with Git LFS or don't commit)
+*.h5
+*.hdf5
+*.pb
+*.tflite
+*.onnx
+*.pkl
+*.joblib
+*.pt
+*.pth
+saved_model/
+ml/models/artifacts/
+ml/models/checkpoints/
+
+# TensorBoard logs
+ml/logs/
+runs/
+
+# -------------------- Extra files --------------------
+presentation/
+
+# -------------------- Datasets --------------------
+# Never commit raw datasets (too large, often licensed)
+data/raw/
+data/processed/
+data/interim/
+*.csv
+*.parquet
+*.feather
+*.arrow
+!ml/config/*.csv
+
+# -------------------- Environment & Secrets --------------------
+.env
+.env.local
+.env.production
+.env.*.local
+*.pem
+*.key
+secrets/
+
+# -------------------- Docker --------------------
+# Don't ignore Dockerfile or compose files — those ARE the infra code
+*.log
+
+# -------------------- IDE & OS --------------------
+# VSCode
+.vscode/
+*.code-workspace
+
+# JetBrains (PyCharm, WebStorm)
+.idea/
+*.iml
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+*.swp
+*.swo
+
+# -------------------- Misc --------------------
+*.bak
+*.tmp
+*.temp
+*.cache
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/

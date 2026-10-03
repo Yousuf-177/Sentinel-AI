@@ -1,0 +1,64 @@
+# ============================================
+# SENTINEL-AI — Model Configuration
+# ============================================
+# Hyperparameters and training configuration for the CNN-LSTM model.
+# Centralized here so changes propagate everywhere without hunting through code.
+
+model:
+  name: "sentinel_cnn_lstm"
+  version: "1.0.0"
+  architecture:
+    # 1D-CNN block
+    cnn_filters: [64, 128]
+    cnn_kernel_size: 3
+    cnn_activation: "relu"
+    cnn_pool_size: 2
+    cnn_dropout: 0.3
+    
+    # LSTM block
+    lstm_units: [128, 64]
+    lstm_dropout: 0.3
+    lstm_recurrent_dropout: 0.2
+    
+    # Dense classifier head
+    dense_units: [128, 64]
+    dense_dropout: 0.4
+    dense_activation: "relu"
+    output_activation: "softmax"
+    num_classes: 6
+
+training:
+  batch_size: 256
+  epochs: 50
+  learning_rate: 0.001
+  optimizer: "adam"
+  loss: "categorical_crossentropy"
+  early_stopping:
+    monitor: "val_loss"
+    patience: 7
+    restore_best_weights: true
+  reduce_lr:
+    monitor: "val_loss"
+    factor: 0.5
+    patience: 3
+    min_lr: 0.00001
+  class_weights: "balanced"    # "balanced" = auto-compute, or provide dict
+
+data:
+  test_size: 0.15
+  val_size: 0.15
+  random_state: 42
+  stratify: true
+  scaler: "standard"           # "standard" | "minmax" | "robust"
+
+inference:
+  confidence_threshold: 0.98
+  flow_timeout_seconds: 120
+  max_batch_size: 32
+  shap_background_samples: 100
+
+paths:
+  model_artifact: "ml/models/artifacts/sentinel_cnn_lstm.h5"
+  preprocessor: "ml/models/artifacts/preprocessor.pkl"
+  feature_schema: "ml/config/feature_schema.json"
+  training_logs: "ml/logs/"
