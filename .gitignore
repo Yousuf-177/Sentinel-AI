@@ -9,6 +9,7 @@ __pycache__/
 *$py.class
 *.so
 *.egg
+*.zip
 *.egg-info/
 dist/
 build/
@@ -56,6 +57,10 @@ runs/
 
 # -------------------- Extra files --------------------
 presentation/
+outputs/
+env_verify_results.txt
+ml.zip
+test_results.txt
 
 # -------------------- Datasets --------------------
 # Never commit raw datasets (too large, often licensed)

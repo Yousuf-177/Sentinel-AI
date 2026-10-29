@@ -17,6 +17,7 @@ from sklearn.metrics import (
     recall_score,
 )
 from sklearn.utils.class_weight import compute_class_weight
+# pyrefly: ignore [missing-import]
 from tensorflow.keras.utils import to_categorical
 
 from ml.models.cnn_lstm import build_cnn_lstm_model, get_training_callbacks
