@@ -1,0 +1,292 @@
+{
+  "explainer": "KernelExplainer",
+  "background_size": 20,
+  "background_reduced": true,
+  "latency_budget_ms": 500.0,
+  "within_budget": false,
+  "n_flows": 10,
+  "init_seconds": 2.345,
+  "batch_seconds": 38.14,
+  "per_flow_ms": 3814.04,
+  "feature_count": 78,
+  "class_names": [
+    "Benign",
+    "BruteForce",
+    "DoS/DDoS",
+    "Infiltration",
+    "PortScan",
+    "WebAttack"
+  ],
+  "samples": [
+    {
+      "row_index": 37882,
+      "true_label": "Benign",
+      "predicted_label": "Benign",
+      "confidence": 0.9776,
+      "human_readable": "Init_Win_bytes_backward: +26045% vs baseline; Down/Up Ratio: -317% vs baseline; PSH Flag Count: +586% vs baseline",
+      "top_features": [
+        {
+          "feature": "Init_Win_bytes_backward",
+          "shap_value": 0.3240952648589345,
+          "direction": "positive",
+          "pct_vs_baseline": "+26045%"
+        },
+        {
+          "feature": "Down/Up Ratio",
+          "shap_value": 0.10696023622574276,
+          "direction": "positive",
+          "pct_vs_baseline": "-317%"
+        },
+        {
+          "feature": "PSH Flag Count",
+          "shap_value": -0.07549218246800872,
+          "direction": "negative",
+          "pct_vs_baseline": "+586%"
+        }
+      ]
+    },
+    {
+      "row_index": 330412,
+      "true_label": "BruteForce",
+      "predicted_label": "BruteForce",
+      "confidence": 0.9987,
+      "human_readable": "PSH Flag Count: +586% vs baseline; Init_Win_bytes_forward: +1979% vs baseline; Fwd IAT Std: -73% vs baseline",
+      "top_features": [
+        {
+          "feature": "PSH Flag Count",
+          "shap_value": 0.2426483882504466,
+          "direction": "positive",
+          "pct_vs_baseline": "+586%"
+        },
+        {
+          "feature": "Init_Win_bytes_forward",
+          "shap_value": 0.20525171581650278,
+          "direction": "positive",
+          "pct_vs_baseline": "+1979%"
+        },
+        {
+          "feature": "Fwd IAT Std",
+          "shap_value": 0.1380084524413832,
+          "direction": "positive",
+          "pct_vs_baseline": "-73%"
+        }
+      ]
+    },
+    {
+      "row_index": 276717,
+      "true_label": "DoS/DDoS",
+      "predicted_label": "DoS/DDoS",
+      "confidence": 0.9931,
+      "human_readable": "Init_Win_bytes_forward: +1979% vs baseline; Average Packet Size: +2060% vs baseline; Avg Bwd Segment Size: +1775% vs baseline",
+      "top_features": [
+        {
+          "feature": "Init_Win_bytes_forward",
+          "shap_value": 0.21817249436399958,
+          "direction": "positive",
+          "pct_vs_baseline": "+1979%"
+        },
+        {
+          "feature": "Average Packet Size",
+          "shap_value": 0.20897342339257285,
+          "direction": "positive",
+          "pct_vs_baseline": "+2060%"
+        },
+        {
+          "feature": "Avg Bwd Segment Size",
+          "shap_value": 0.12775643440071086,
+          "direction": "positive",
+          "pct_vs_baseline": "+1775%"
+        }
+      ]
+    },
+    {
+      "row_index": 178230,
+      "true_label": "Infiltration",
+      "predicted_label": "Infiltration",
+      "confidence": 0.9982,
+      "human_readable": "Init_Win_bytes_forward: +13% vs baseline; Init_Win_bytes_backward: -605% vs baseline; Packet Length Std: -104% vs baseline",
+      "top_features": [
+        {
+          "feature": "Init_Win_bytes_forward",
+          "shap_value": 0.47225097180860964,
+          "direction": "positive",
+          "pct_vs_baseline": "+13%"
+        },
+        {
+          "feature": "Init_Win_bytes_backward",
+          "shap_value": 0.06271231250699251,
+          "direction": "positive",
+          "pct_vs_baseline": "-605%"
+        },
+        {
+          "feature": "Packet Length Std",
+          "shap_value": 0.06008421169877012,
+          "direction": "positive",
+          "pct_vs_baseline": "-104%"
+        }
+      ]
+    },
+    {
+      "row_index": 182113,
+      "true_label": "PortScan",
+      "predicted_label": "PortScan",
+      "confidence": 0.9973,
+      "human_readable": "PSH Flag Count: +586% vs baseline; Init_Win_bytes_forward: +1979% vs baseline; ACK Flag Count: -381% vs baseline",
+      "top_features": [
+        {
+          "feature": "PSH Flag Count",
+          "shap_value": 0.24358771231752477,
+          "direction": "positive",
+          "pct_vs_baseline": "+586%"
+        },
+        {
+          "feature": "Init_Win_bytes_forward",
+          "shap_value": 0.12722672322588,
+          "direction": "positive",
+          "pct_vs_baseline": "+1979%"
+        },
+        {
+          "feature": "ACK Flag Count",
+          "shap_value": 0.10111181838981756,
+          "direction": "positive",
+          "pct_vs_baseline": "-381%"
+        }
+      ]
+    },
+    {
+      "row_index": 336059,
+      "true_label": "WebAttack",
+      "predicted_label": "WebAttack",
+      "confidence": 0.954,
+      "human_readable": "Init_Win_bytes_backward: -605% vs baseline; Subflow Fwd Packets: +43999% vs baseline; Packet Length Std: +2083% vs baseline",
+      "top_features": [
+        {
+          "feature": "Init_Win_bytes_backward",
+          "shap_value": 0.1349421618908946,
+          "direction": "positive",
+          "pct_vs_baseline": "-605%"
+        },
+        {
+          "feature": "Subflow Fwd Packets",
+          "shap_value": 0.1344180797024183,
+          "direction": "positive",
+          "pct_vs_baseline": "+43999%"
+        },
+        {
+          "feature": "Packet Length Std",
+          "shap_value": 0.11851632091418766,
+          "direction": "positive",
+          "pct_vs_baseline": "+2083%"
+        }
+      ]
+    },
+    {
+      "row_index": 36427,
+      "true_label": "PortScan",
+      "predicted_label": "PortScan",
+      "confidence": 0.9973,
+      "human_readable": "PSH Flag Count: +586% vs baseline; URG Flag Count: -272% vs baseline; Average Packet Size: -226% vs baseline",
+      "top_features": [
+        {
+          "feature": "PSH Flag Count",
+          "shap_value": 0.2124998192588664,
+          "direction": "positive",
+          "pct_vs_baseline": "+586%"
+        },
+        {
+          "feature": "URG Flag Count",
+          "shap_value": 0.10965342812144596,
+          "direction": "positive",
+          "pct_vs_baseline": "-272%"
+        },
+        {
+          "feature": "Average Packet Size",
+          "shap_value": 0.08539381006988717,
+          "direction": "positive",
+          "pct_vs_baseline": "-226%"
+        }
+      ]
+    },
+    {
+      "row_index": 295581,
+      "true_label": "Benign",
+      "predicted_label": "BruteForce",
+      "confidence": 0.9329,
+      "human_readable": "Min Packet Length: -408% vs baseline; Init_Win_bytes_forward: -725% vs baseline; ACK Flag Count: +1143% vs baseline",
+      "top_features": [
+        {
+          "feature": "Min Packet Length",
+          "shap_value": 0.1839904014182921,
+          "direction": "positive",
+          "pct_vs_baseline": "-408%"
+        },
+        {
+          "feature": "Init_Win_bytes_forward",
+          "shap_value": 0.1290935268515409,
+          "direction": "positive",
+          "pct_vs_baseline": "-725%"
+        },
+        {
+          "feature": "ACK Flag Count",
+          "shap_value": 0.12349238092201292,
+          "direction": "positive",
+          "pct_vs_baseline": "+1143%"
+        }
+      ]
+    },
+    {
+      "row_index": 39917,
+      "true_label": "DoS/DDoS",
+      "predicted_label": "DoS/DDoS",
+      "confidence": 0.9146,
+      "human_readable": "Down/Up Ratio: -317% vs baseline; ACK Flag Count: +1143% vs baseline; PSH Flag Count: -391% vs baseline",
+      "top_features": [
+        {
+          "feature": "Down/Up Ratio",
+          "shap_value": 0.2940458111534734,
+          "direction": "positive",
+          "pct_vs_baseline": "-317%"
+        },
+        {
+          "feature": "ACK Flag Count",
+          "shap_value": 0.24824644500274284,
+          "direction": "positive",
+          "pct_vs_baseline": "+1143%"
+        },
+        {
+          "feature": "PSH Flag Count",
+          "shap_value": 0.09612905457245842,
+          "direction": "positive",
+          "pct_vs_baseline": "-391%"
+        }
+      ]
+    },
+    {
+      "row_index": 85393,
+      "true_label": "PortScan",
+      "predicted_label": "PortScan",
+      "confidence": 0.9973,
+      "human_readable": "Bwd Packet Length Mean: -209% vs baseline; PSH Flag Count: +586% vs baseline; Bwd Packet Length Min: -1470% vs baseline",
+      "top_features": [
+        {
+          "feature": "Bwd Packet Length Mean",
+          "shap_value": 0.12370076631168958,
+          "direction": "positive",
+          "pct_vs_baseline": "-209%"
+        },
+        {
+          "feature": "PSH Flag Count",
+          "shap_value": 0.11821527348242954,
+          "direction": "positive",
+          "pct_vs_baseline": "+586%"
+        },
+        {
+          "feature": "Bwd Packet Length Min",
+          "shap_value": 0.11228391577830314,
+          "direction": "positive",
+          "pct_vs_baseline": "-1470%"
+        }
+      ]
+    }
+  ]
+}
