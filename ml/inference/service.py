@@ -18,6 +18,7 @@ from pathlib import Path
 import joblib
 import socketio
 import yaml
+from dotenv import load_dotenv
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
@@ -210,6 +211,7 @@ def main():
     parser.add_argument("--no-backend", action="store_true", help="Print alerts as JSON instead of sending to backend")
     args = parser.parse_args()
 
+    load_dotenv(_project_path(".env"))
     logging.basicConfig(
         level=os.getenv("LOG_LEVEL", "INFO").upper(),
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
@@ -229,6 +231,7 @@ def main():
         no_backend=args.no_backend,
     )
 
+    signal.signal(signal.SIGTERM, lambda *_: service.stop())
     if args.pcap:
         service.run_pcap(args.pcap)
     else:
