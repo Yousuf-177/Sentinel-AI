@@ -7,10 +7,9 @@ Passes captured packets to the flow aggregator for feature extraction.
 
 import argparse
 import logging
-import threading
 from pathlib import Path
 
-from scapy.all import IP, TCP, UDP, rdpcap, sniff
+from scapy.all import AsyncSniffer, IP, TCP, UDP, rdpcap
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +52,7 @@ class PacketSniffer:
         self.callback = callback
         self.bpf_filter = bpf_filter
         self._running = False
-        self._thread = None
+        self._capture = None
         self._packet_count = 0
 
     def _process_packet(self, packet):
@@ -67,29 +66,20 @@ class PacketSniffer:
             self.callback(info)
 
     def start(self):
-        """Start packet capture in a background thread."""
-        if self._running:
+        """Start packet capture with a stoppable Scapy AsyncSniffer."""
+        if self.is_running:
             logger.warning("Sniffer is already running")
             return
 
+        self._capture = AsyncSniffer(
+            iface=self.interface,
+            prn=self._process_packet,
+            filter=self.bpf_filter,
+            store=False,
+        )
+        self._capture.start()
         self._running = True
-        self._thread = threading.Thread(target=self._capture_loop, daemon=True)
-        self._thread.start()
-        logger.info(f"Packet sniffer started on interface '{self.interface}'")
-
-    def _capture_loop(self):
-        """Main capture loop."""
-        try:
-            sniff(
-                iface=self.interface,
-                prn=self._process_packet,
-                filter=self.bpf_filter,
-                store=False,
-                stop_filter=lambda _: not self._running,
-            )
-        except Exception as e:
-            logger.error(f"Capture error: {e}")
-            self._running = False
+        logger.info("Packet sniffer started on interface '%s'", self.interface)
 
     def sniff_pcap(self, path: str):
         """
@@ -108,15 +98,23 @@ class PacketSniffer:
         logger.info(f"Pcap replay finished. Packets parsed: {self._packet_count}")
 
     def stop(self):
-        """Stop packet capture."""
+        """Stop live capture promptly, including when the interface is idle."""
+        capture = self._capture
         self._running = False
-        if self._thread:
-            self._thread.join(timeout=5)
-        logger.info(f"Sniffer stopped. Total packets captured: {self._packet_count}")
+        if capture is not None:
+            try:
+                if capture.running:
+                    capture.stop(join=True)
+            except Exception:
+                logger.exception("Error while stopping packet capture")
+            finally:
+                self._capture = None
+        logger.info("Sniffer stopped. Total packets captured: %s", self._packet_count)
 
     @property
     def is_running(self) -> bool:
-        return self._running
+        capture = self._capture
+        return bool(self._running and capture is not None and capture.running)
 
     @property
     def packet_count(self) -> int:

@@ -1,12 +1,13 @@
 """
-SENTINEL-AI — Inference Pipeline Module
+SENTINEL-AI — Inference Pipeline
 
-Wires together: flow features → preprocessing → model prediction → SHAP explanation → decision routing.
-Emits structured alert JSON objects over Socket.io.
+Transforms one completed network flow into a model prediction and a
+schema-compatible alert. SHAP and firewall mitigation are deliberately
+kept out of the packet-capture hot path.
 """
 
-import time
 import logging
+import time
 import uuid
 
 import numpy as np
@@ -15,114 +16,105 @@ logger = logging.getLogger(__name__)
 
 
 class InferencePipeline:
-    """
-    Real-time inference pipeline.
-    
-    Takes flow feature dicts from the FlowAggregator, runs them through
-    the preprocessing → model → SHAP → decision router pipeline, and
-    emits alert JSON objects.
-    
-    Usage:
-        pipeline = InferencePipeline(model, preprocessor, explainer, emitter)
-        pipeline.process_flow(flow_features)
-    """
+    """Preprocess, classify, and emit alerts for completed network flows."""
 
-    def __init__(self, model, preprocessor, explainer, emitter=None, confidence_threshold: float = 0.98):
-        """
-        Args:
-            model: Trained Keras model.
-            preprocessor: Fitted Preprocessor instance.
-            explainer: SHAPExplainer instance.
-            emitter: Callable that sends the alert dict (e.g., Socket.io emit).
-            confidence_threshold: Threshold for auto-mitigation routing.
-        """
+    def __init__(self, model, preprocessor, explainer=None, emitter=None):
         self.model = model
         self.preprocessor = preprocessor
         self.explainer = explainer
         self.emitter = emitter
-        self.confidence_threshold = confidence_threshold
-        self.class_names = ["Benign", "DoS/DDoS", "PortScan", "BruteForce", "WebAttack", "Infiltration"]
+        self.class_names = [str(name) for name in preprocessor.label_encoder.classes_]
+        self.feature_names = list(preprocessor.fitted_feature_names)
         self._alert_count = 0
 
+        output_shape = getattr(model, "output_shape", None)
+        if output_shape and output_shape[-1] != len(self.class_names):
+            raise ValueError(
+                "Model output count does not match saved label encoder: "
+                f"{output_shape[-1]} outputs vs {len(self.class_names)} classes"
+            )
+
+    @staticmethod
+    def _protocol_name(value):
+        """Normalize Scapy protocol numbers and names to the alert contract."""
+        if isinstance(value, str):
+            normalized = value.upper()
+            if normalized in {"TCP", "UDP"}:
+                return normalized
+        try:
+            number = int(value)
+        except (TypeError, ValueError):
+            number = None
+        return {6: "TCP", 17: "UDP"}.get(number, "OTHER")
+
     def process_flow(self, flow_features: dict) -> dict:
-        """
-        Process a single flow through the full pipeline.
-        
-        Args:
-            flow_features: Dict from FlowAggregator._compute_features()
-        
-        Returns:
-            Alert dict with label, confidence, explanation, and action.
-        """
+        """Classify a completed flow and return its alert payload."""
         import pandas as pd
 
-        start_time = time.time()
+        started = time.perf_counter()
+        missing = [name for name in self.feature_names if name not in flow_features]
+        if missing:
+            raise ValueError(
+                f"Flow is missing {len(missing)} model features; "
+                f"first missing fields: {missing[:5]}"
+            )
 
-        # Extract metadata
         metadata = {
-            "src_ip": flow_features.get("src_ip", "unknown"),
-            "dst_ip": flow_features.get("dst_ip", "unknown"),
-            "src_port": flow_features.get("src_port", 0),
-            "dst_port": flow_features.get("dst_port", 0),
-            "protocol": flow_features.get("protocol", "TCP"),
+            "src_ip": str(flow_features.get("src_ip", "0.0.0.0")),
+            "dst_ip": str(flow_features.get("dst_ip", "0.0.0.0")),
+            "src_port": int(flow_features.get("src_port", 0) or 0),
+            "dst_port": int(flow_features.get("dst_port", 0) or 0),
+            "protocol": self._protocol_name(flow_features.get("protocol", "OTHER")),
         }
 
-        # Preprocess
-        feature_keys = [k for k in flow_features.keys() if k not in 
-                       ["src_ip", "dst_ip", "src_port", "dst_port", "protocol", "start_time"]]
-        df = pd.DataFrame([{k: flow_features[k] for k in feature_keys}])
-        X = self.preprocessor.transform(df)
+        frame = pd.DataFrame(
+            [{name: flow_features[name] for name in self.feature_names}],
+            columns=self.feature_names,
+        )
+        transformed = self.preprocessor.transform(frame)
+        probabilities = np.asarray(self.model.predict(transformed, verbose=0))[0]
+        if probabilities.ndim != 1 or len(probabilities) != len(self.class_names):
+            raise ValueError("Model returned an invalid probability vector")
 
-        # Predict
-        proba = self.model.predict(X, verbose=0)[0]
-        pred_class = int(np.argmax(proba))
-        confidence = float(proba[pred_class])
-        label = self.class_names[pred_class]
+        predicted_index = int(np.argmax(probabilities))
+        confidence = float(probabilities[predicted_index])
+        label = self.class_names[predicted_index]
 
-        # Explain (only for non-benign or high-confidence alerts)
+        # Phase 4 is detection-only. A prediction must never be presented as
+        # a completed firewall action; IPS requires a separately reviewed phase.
+        action = "ALLOW" if label == "Benign" else "ALERT"
         explanation = None
-        if label != "Benign" or confidence < 0.9:
+        if self.explainer is not None and label != "Benign":
             try:
                 explanation = self.explainer.explain_alert(
-                    X[0], self.preprocessor.fitted_feature_names
+                    transformed[0], self.feature_names
                 )
-            except Exception as e:
-                logger.warning(f"SHAP explanation failed: {e}")
-                explanation = {"top_features": [], "human_readable": "Explanation unavailable"}
+            except Exception:
+                logger.exception("Optional SHAP explanation failed")
 
-        # Decision routing
-        if label != "Benign" and confidence >= self.confidence_threshold:
-            action = "MITIGATE"
-        elif label != "Benign":
-            action = "ALERT"
-        else:
-            action = "ALLOW"
-
-        # Build alert
-        latency_ms = (time.time() - start_time) * 1000
         alert = {
-            "alert_id": str(uuid.uuid4())[:8],
+            "alert_id": str(uuid.uuid4()),
             "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-            "flow_id": str(uuid.uuid4())[:8],
+            "flow_id": str(flow_features.get("flow_id") or uuid.uuid4()),
             **metadata,
             "label": label,
-            "confidence": round(confidence, 4),
+            "confidence": round(confidence, 6),
             "explanation": explanation,
             "action": action,
-            "mitigation_status": "pending" if action == "MITIGATE" else "n/a",
-            "inference_latency_ms": round(latency_ms, 2),
+            "mitigation_status": "n/a",
+            "inference_latency_ms": round((time.perf_counter() - started) * 1000, 2),
         }
 
         self._alert_count += 1
+        if self.emitter is not None:
+            try:
+                self.emitter(alert)
+            except Exception:
+                # A backend outage must not terminate packet capture.
+                logger.exception("Alert delivery failed; alert was not delivered")
 
-        # Emit
-        if self.emitter:
-            self.emitter(alert)
-
-        logger.debug(
-            f"Alert #{self._alert_count}: {label} ({confidence:.2%}) → {action} "
-            f"[{metadata['src_ip']}:{metadata['src_port']} → {metadata['dst_ip']}:{metadata['dst_port']}] "
-            f"({latency_ms:.1f}ms)"
+        logger.info(
+            "Flow %s classified as %s (%.2f%%), action=%s",
+            alert["flow_id"], label, confidence * 100, action,
         )
-
         return alert

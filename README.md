@@ -108,6 +108,10 @@ Sentinel-AI/
 - Docker & Docker Compose
 - VirtualBox (for lab simulation)
 
+### Model artifacts (Hugging Face Hub)
+
+Large trained binaries are not committed to Git. Publish the matching Keras model and fitted preprocessor to a public Hugging Face model repository, then configure `HF_MODEL_REPO_ID` and pin `HF_MODEL_REVISION` to the full Hub commit SHA. The publisher generates a SHA-256 manifest; the inference service verifies it before loading. See [Hugging Face artifact deployment guide](docs/deployment/huggingface_artifacts.md).
+
 ### Setup
 
 ```bash
