@@ -25,4 +25,4 @@ COPY .env.example ./.env
 # Expose no ports — communicates via Socket.io to the Node backend
 # Needs NET_ADMIN + NET_RAW capabilities for packet capture and iptables
 
-CMD ["python", "-m", "ml.inference.pipeline"]
+CMD ["python", "-m", "ml.inference.service"]
