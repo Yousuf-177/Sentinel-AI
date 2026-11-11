@@ -23,6 +23,8 @@ jobs:
           python-version: "3.11"
           cache: pip
       - name: Install focused test dependencies
-        run: python -m pip install --upgrade pip numpy pandas pytest scapy
-      - name: Run inference contract tests
+        run: python -m pip install --upgrade pip numpy pandas pytest scapy huggingface_hub
+      - name: Compile runtime and publishing modules
+        run: python -m compileall -q ml/inference ml/models/publish_hf_artifacts.py
+      - name: Run inference and artifact tests
         run: python -m pytest ml/tests/test_inference_pipeline.py ml/tests/test_artifacts.py -q
