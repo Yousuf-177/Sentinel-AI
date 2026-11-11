@@ -60,3 +60,53 @@ def test_manifest_requires_both_files(tmp_path):
 
     with pytest.raises(FileNotFoundError, match="preprocessor.pkl"):
         verify_artifact_manifest(tmp_path)
+
+
+
+def test_local_artifact_resolution_does_not_require_huggingface(tmp_path):
+    from ml.inference.artifacts import resolve_artifact_paths
+
+    model = tmp_path / "model.h5"
+    preprocessor = tmp_path / "preprocessor.pkl"
+    model.write_bytes(b"model")
+    preprocessor.write_bytes(b"preprocessor")
+
+    resolved_model, resolved_preprocessor, manifest = resolve_artifact_paths(
+        model, preprocessor
+    )
+
+    assert resolved_model == model
+    assert resolved_preprocessor == preprocessor
+    assert manifest is None
+
+
+def test_hub_artifact_resolution_uses_pinned_revision_and_manifest(tmp_path, monkeypatch):
+    import sys
+    import types
+    from ml.inference.artifacts import resolve_artifact_paths
+
+    _write_artifacts(tmp_path)
+    calls = {}
+
+    def fake_snapshot_download(**kwargs):
+        calls.update(kwargs)
+        return str(tmp_path)
+
+    monkeypatch.setitem(
+        sys.modules,
+        "huggingface_hub",
+        types.SimpleNamespace(snapshot_download=fake_snapshot_download),
+    )
+
+    model, preprocessor, manifest = resolve_artifact_paths(
+        "local-model.h5",
+        "local-preprocessor.pkl",
+        repo_id="test-user/sentinel-ai-models",
+        revision="a" * 40,
+    )
+
+    assert model.name == "sentinel_cnn_lstm.h5"
+    assert preprocessor.name == "preprocessor.pkl"
+    assert manifest["feature_count"] == 78
+    assert calls["revision"] == "a" * 40
+    assert calls["repo_id"] == "test-user/sentinel-ai-models"
