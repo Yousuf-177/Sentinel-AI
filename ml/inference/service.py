@@ -27,6 +27,7 @@ if str(PROJECT_ROOT) not in sys.path:
 from ml.ingestion.flow_aggregator import FlowAggregator
 from ml.ingestion.packet_sniffer import PacketSniffer
 from ml.inference.pipeline import InferencePipeline
+from ml.inference.artifacts import resolve_artifact_paths
 
 logger = logging.getLogger("sentinel.ids")
 
@@ -74,20 +75,19 @@ class SentinelIDSService:
         flow_timeout=120.0,
         bpf_filter="ip",
         no_backend=False,
+        hf_model_repo_id=None,
+        hf_model_revision="main",
+        hf_cache_dir=None,
+        hf_token=None,
     ):
-        model_file = _project_path(model_path)
-        preprocessor_file = _project_path(preprocessor_path)
-        if not model_file.is_file():
-            raise FileNotFoundError(
-                f"Model artifact not found: {model_file}. Train/export the model "
-                "and place the artifact at MODEL_PATH."
-            )
-        if not preprocessor_file.is_file():
-            raise FileNotFoundError(
-                f"Preprocessor artifact not found: {preprocessor_file}. Run "
-                "python -m ml.models.build_preprocessor after preparing the "
-                "CIC-IDS2017 data."
-            )
+        model_file, preprocessor_file, artifact_manifest = resolve_artifact_paths(
+            local_model_path=_project_path(model_path),
+            local_preprocessor_path=_project_path(preprocessor_path),
+            repo_id=hf_model_repo_id,
+            revision=hf_model_revision,
+            cache_dir=_project_path(hf_cache_dir) if hf_cache_dir else None,
+            token=hf_token,
+        )
 
         artifact = joblib.load(preprocessor_file)
         required = {"scaler", "label_encoder", "feature_names"}
@@ -114,6 +114,16 @@ class SentinelIDSService:
 
         self.preprocessor = PreprocessorAdapter(artifact)
         self.feature_names = self.preprocessor.fitted_feature_names
+        if artifact_manifest is not None:
+            if artifact_manifest["feature_count"] != len(self.feature_names):
+                raise ValueError("Hub manifest feature_count does not match preprocessor.pkl")
+            manifest_features = artifact_manifest.get("feature_names")
+            if manifest_features is not None and manifest_features != self.feature_names:
+                raise ValueError("Hub manifest feature_names do not match preprocessor.pkl")
+            manifest_classes = artifact_manifest["class_order"]
+            encoder_classes = [str(value) for value in self.preprocessor.label_encoder.classes_]
+            if manifest_classes != encoder_classes:
+                raise ValueError("Hub manifest class_order does not match preprocessor.pkl")
         if len(self.feature_names) != 78:
             raise ValueError(
                 f"Expected 78 trained CIC-IDS features, found {len(self.feature_names)}"
@@ -229,6 +239,10 @@ def main():
         )),
         bpf_filter=args.bpf_filter,
         no_backend=args.no_backend,
+        hf_model_repo_id=os.getenv("HF_MODEL_REPO_ID") or None,
+        hf_model_revision=os.getenv("HF_MODEL_REVISION", "main"),
+        hf_cache_dir=os.getenv("HF_HUB_CACHE_DIR") or None,
+        hf_token=os.getenv("HF_TOKEN") or None,
     )
 
     signal.signal(signal.SIGTERM, lambda *_: service.stop())
