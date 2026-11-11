@@ -1,0 +1,28 @@
+name: Phase 4 IDS unit tests
+
+on:
+  push:
+    branches:
+      - "feature/phase-4-live-ids"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "ml/inference/**"
+      - "ml/ingestion/**"
+      - "ml/tests/test_inference_pipeline.py"
+      - ".github/workflows/phase4-ids-tests.yml"
+
+jobs:
+  inference-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install focused test dependencies
+        run: python -m pip install --upgrade pip numpy pandas pytest scapy
+      - name: Run inference contract tests
+        run: python -m pytest ml/tests/test_inference_pipeline.py -q
