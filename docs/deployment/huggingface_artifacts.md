@@ -74,13 +74,13 @@ Set these variables in your deployment environment (not in committed secrets):
 
 ```dotenv
 HF_MODEL_REPO_ID=mohd-yousuf-177/sentinel-ai-models
-HF_MODEL_REVISION=<full-hugging-face-commit-sha>
+HF_MODEL_REVISION=2ff9fa8422c0f1df9799fb7874ac3cebe6fb7eae
 HF_MODEL_FILENAME=sentinel_cnn_lstm.h5
 HF_PREPROCESSOR_FILENAME=preprocessor.pkl
 HF_HUB_CACHE_DIR=/app/.cache/huggingface
 ```
 
-Use the exact full commit SHA printed by the publisher for `HF_MODEL_REVISION`.
+The published release is pinned to `2ff9fa8422c0f1df9799fb7874ac3cebe6fb7eae` in the example configuration. For a later upload, replace it with the new full commit SHA printed by the publisher.
 Using `main` is convenient for development but means a later Hub upload can
 change what a new deployment downloads.
 
