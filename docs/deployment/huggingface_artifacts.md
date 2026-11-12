@@ -7,9 +7,9 @@ model repository** and downloaded by the inference service at startup.
 ## 1. Create a public model repository
 
 1. Sign in at https://huggingface.co/new
-2. Choose a model repository name, for example `sentinel-ai-models`.
+2. Choose a model repository name, named `sentinel-ai-models`.
 3. Set visibility to **Public**.
-4. Keep the repository ID (format: `your-username/sentinel-ai-models`).
+4. Keep the repository ID (format: `mohd-yousuf-177/sentinel-ai-models`).
 
 Public downloads do not need a Hugging Face token. Uploading does.
 
@@ -55,7 +55,7 @@ From the repository root:
 ```bash
 python -m pip install -r ml/requirements.txt
 python -m ml.models.publish_hf_artifacts \
-  --repo-id your-username/sentinel-ai-models \
+  --repo-id mohd-yousuf-177/sentinel-ai-models \
   --model ml/models/artifacts/sentinel_cnn_lstm.h5 \
   --preprocessor ml/models/artifacts/preprocessor.pkl \
   --model-version 1.0.0
@@ -73,7 +73,7 @@ is not the selected deployment configuration for SENTINEL-AI.
 Set these variables in your deployment environment (not in committed secrets):
 
 ```dotenv
-HF_MODEL_REPO_ID=your-username/sentinel-ai-models
+HF_MODEL_REPO_ID=mohd-yousuf-177/sentinel-ai-models
 HF_MODEL_REVISION=<full-hugging-face-commit-sha>
 HF_MODEL_FILENAME=sentinel_cnn_lstm.h5
 HF_PREPROCESSOR_FILENAME=preprocessor.pkl
