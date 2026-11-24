@@ -55,7 +55,7 @@ inference:
   confidence_threshold: 0.98
   flow_timeout_seconds: 120
   max_batch_size: 32
-  shap_background_samples: 100
+  shap_background_samples: 20
 
 paths:
   model_artifact: "ml/models/artifacts/sentinel_cnn_lstm.h5"

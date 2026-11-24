@@ -1,0 +1,15 @@
+{
+  "flows_emitted": 2000,
+  "flows_classified": 257,
+  "flows_dropped": 1743,
+  "max_queue_depth": 256,
+  "final_queue_depth": 0,
+  "queue_cap": 256,
+  "shap_enabled": false,
+  "elapsed_seconds": 24.608,
+  "classify_latency_ms": {
+    "mean": 95.33,
+    "p50": 92.62,
+    "p95": 114.74
+  }
+}
